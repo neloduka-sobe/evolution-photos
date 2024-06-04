@@ -2,6 +2,7 @@
 # by Borys Łangowicz (neloduka_sobe)
 import numpy as np
 import os
+import copy
 
 class Evolution:
 
@@ -15,11 +16,10 @@ class Evolution:
         self.dna[6, :] = np.random.randint(0, 361, size=self.num_of_sprites)
 
 
-    def __init__(self, sprite, goal_image, num_in_epoch=100, num_of_sprites=50):
+    def __init__(self, sprite, goal_image, num_of_sprites=50):
         self.goal_image = goal_image
         self.width, self.height = self.goal_image.size
         self.sprite = sprite
-        self.num_in_epoch = num_in_epoch
         self.num_of_sprites = num_of_sprites
         self.size_factor = 1.5 # Change it later TODO
         self.init_matrix()
@@ -39,12 +39,8 @@ class Evolution:
             self.dna[5, col] = np.random.uniform(0, self.size_factor)
             self.dna[6, col] = np.random.randint(0, 361)
 
-    def evolve(self):
-        #TODO
-        # Create  x mutations
-        # Get the best one
-        # Save step
-        pass
+    def copy(self):
+        return copy.deepcopy(self)
 
     def calculate_difference(self):
         np_current = np.array(self.generate_image())
