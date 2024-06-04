@@ -5,20 +5,20 @@ import os
 import copy
 from PIL import Image, ImageDraw, ImageOps
 from pathlib import Path
+
 class Evolution:
 
     def init_matrix(self):
 
-        self.dna = np.zeros((7, self.num_of_sprites))
-        self.dna[0:3, :] = np.random.randint(0, 256, size=(3, self.num_of_sprites))
-        self.dna[3, :] = np.random.randint(0, self.width + 1, size=self.num_of_sprites)
-        self.dna[4, :] = np.random.randint(0, self.height + 1, size=self.num_of_sprites)
-        self.dna[5, :] = np.random.uniform(0.5, self.size_factor, size=self.num_of_sprites)
-        self.dna[6, :] = np.random.randint(0, 361, size=self.num_of_sprites)
+        self.dna = np.zeros((8, self.num_of_sprites))
+        self.dna[0:4, :] = np.random.randint(1, 256, size=(4, self.num_of_sprites))
+        self.dna[4, :] = np.random.randint(0, self.width + 1, size=self.num_of_sprites)
+        self.dna[5, :] = np.random.randint(0, self.height + 1, size=self.num_of_sprites)
+        self.dna[6, :] = np.random.uniform(0.5, self.size_factor, size=self.num_of_sprites)
+        self.dna[7, :] = np.random.randint(0, 361, size=self.num_of_sprites)
 
     # TODO
     def load_matrix(self, file):
-        print("l")
         f = Path(file)
         if f.is_file() and f.exists():
             self.dna = np.loadtxt(file,
@@ -33,8 +33,8 @@ class Evolution:
         self.sprite = sprite
         self.sprite_width, self.sprite_height = self.sprite.size
         self.num_of_sprites = num_of_sprites
-        self.size_factor = 5 # Change it later TODO
-        self.num_of_sprites = 100 # Change it later TODO
+        self.size_factor = 5
+        self.num_of_sprites = num_of_sprites
         self.acc_num_of_sprites = 1
         self.init_matrix()
 
@@ -58,10 +58,11 @@ class Evolution:
             red = int(self.dna[0, i])
             green = int(self.dna[1, i])
             blue = int(self.dna[2, i])
-            x = int(self.dna[3, i])
-            y = int(self.dna[4, i])
-            size_factor = self.dna[5, i]
-            rotation = int(self.dna[6, i])
+            transparency = int(self.dna[3, i])
+            x = int(self.dna[4, i])
+            y = int(self.dna[5, i])
+            size_factor = self.dna[6, i]
+            rotation = int(self.dna[7, i])
 
             # Resize
             sprite_width = int(self.sprite_width * size_factor)
@@ -69,7 +70,7 @@ class Evolution:
 
             sprite = self.sprite.resize((sprite_width, sprite_height), Image.ANTIALIAS)
             # Change the sprite color by blending with a color overlay
-            color_overlay = Image.new('RGBA', sprite.size, (red, green, blue, 255))
+            color_overlay = Image.new('RGBA', sprite.size, (red, green, blue, transparency))
             sprite = Image.blend(sprite, color_overlay, alpha=0.5)
 
             # Rotate the sprite
@@ -88,11 +89,11 @@ class Evolution:
     def mutate(self, n=1):
         random_columns = np.random.choice(self.acc_num_of_sprites, n, replace=False)
         for col in random_columns:
-            self.dna[0:3, col] = np.random.randint(0, 256, size=3) 
-            self.dna[3, col] = np.random.randint(0, self.width + 1)
-            self.dna[4, col] = np.random.randint(0, self.height + 1)
-            self.dna[5, col] = np.random.uniform(0.5, self.size_factor)
-            self.dna[6, col] = np.random.randint(0, 361)
+            self.dna[0:4, col] = np.random.randint(0, 256, size=4) 
+            self.dna[4, col] = np.random.randint(0, self.width + 1)
+            self.dna[5, col] = np.random.randint(0, self.height + 1)
+            self.dna[6, col] = np.random.uniform(0.5, self.size_factor)
+            self.dna[7, col] = np.random.randint(0, 361)
 
     def add_sprite(self):
         if self.acc_num_of_sprites < self.num_of_sprites:

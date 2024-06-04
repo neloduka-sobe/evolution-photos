@@ -1,7 +1,6 @@
 load saved steps
-transparency
 transparent background
+early stoping
+make into infinity loop
 make it run in GPU
 refactor
-make into infinity loop
-early stoping

@@ -50,14 +50,17 @@ if __name__ == "__main__":
             results[:, 1] = differences
             min_index = np.argmin(results[:, 1])
             new_object = results[min_index, 0]
-            if results[min_index, 1] < evo.calculate_difference():
+
+            diff = results[min_index, 1] - evo.calculate_difference() 
+            if diff > 0:
                 evo = new_object
 
             # Save every 100 steps
             if not i % 100:
                 evo.save_step(i)
                 print(f"Step: {i}; Saving to file: step{i}.PNG")
-            if not i % 200:
+
+            if not i % 150: # Adapt early stopping using diff TODO
                 evo.add_sprite()
 
     except KeyboardInterrupt:
