@@ -56,7 +56,8 @@ if __name__ == "__main__":
         results[:, 1] = differences
         min_index = np.argmin(results[:, 1])
         new_object = results[min_index, 0]
-        evo = new_object
+        if results[min_index, 1] < evo.calculate_difference():
+            evo = new_object
 
         # Save every 100 steps
         if not i % 100:
