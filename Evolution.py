@@ -13,7 +13,7 @@ class Evolution:
         self.dna[0:3, :] = np.random.randint(0, 256, size=(3, self.num_of_sprites))
         self.dna[3, :] = np.random.randint(0, self.width + 1, size=self.num_of_sprites)
         self.dna[4, :] = np.random.randint(0, self.height + 1, size=self.num_of_sprites)
-        self.dna[5, :] = np.random.uniform(0.1, self.size_factor, size=self.num_of_sprites)
+        self.dna[5, :] = np.random.uniform(0.5, self.size_factor, size=self.num_of_sprites)
         self.dna[6, :] = np.random.randint(0, 361, size=self.num_of_sprites)
 
 
@@ -44,8 +44,6 @@ class Evolution:
             # Resize
             sprite_width = int(self.sprite_width * size_factor)
             sprite_height = int(self.sprite_height * size_factor)
-            if (sprite_height <= 0 or sprite_width <= 0):
-                continue
 
             sprite = self.sprite.resize((sprite_width, sprite_height), Image.ANTIALIAS)
             # Change the sprite color by blending with a color overlay
@@ -71,7 +69,7 @@ class Evolution:
             self.dna[0:3, col] = np.random.randint(0, 256, size=3) 
             self.dna[3, col] = np.random.randint(0, self.width + 1)
             self.dna[4, col] = np.random.randint(0, self.height + 1)
-            self.dna[5, col] = np.random.uniform(0, self.size_factor)
+            self.dna[5, col] = np.random.uniform(0.5, self.size_factor)
             self.dna[6, col] = np.random.randint(0, 361)
 
     def copy(self):

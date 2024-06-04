@@ -7,15 +7,16 @@ import numpy as np
 #TODO vectorize
 def generate_copy_and_difference(evo):
     evo_copy = evo.copy()
-    evo_copy.mutate()
+    evo_copy.mutate(5)
     difference = evo_copy.calculate_difference()
     return evo_copy, difference
 
 if __name__ == "__main__":
     PATH_TO_IMAGE = "image.png"
     PATH_TO_SPRITE = "sprite.png"
-    NUM_OF_ITER = 10000
-    NUM_IN_EPOCH = 1
+    NUM_OF_ITER = 1000000
+    NUM_IN_EPOCH = 10
+    NUM_OF_SPRITES = 75
 
     # Load the images
     image = Image.open(PATH_TO_IMAGE)
@@ -34,7 +35,7 @@ if __name__ == "__main__":
     sprite = sprite.resize((w, h))
 
     # Initialize the class
-    evo = Evolution(sprite, image)
+    evo = Evolution(sprite, image, NUM_OF_SPRITES)
 
     # Evolve
     for i in range(NUM_OF_ITER):
