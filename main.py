@@ -4,8 +4,7 @@ from Evolution import Evolution
 from PIL import Image
 import numpy as np
 
-#TODO vectorize
-def generate_copy_and_difference(evo):
+def generate_copy_and_difference(index):
     evo_copy = evo.copy()
     evo_copy.mutate(5)
     difference = evo_copy.calculate_difference()
@@ -15,8 +14,11 @@ if __name__ == "__main__":
     PATH_TO_IMAGE = "image.png"
     PATH_TO_SPRITE = "sprite.png"
     NUM_OF_ITER = 1000000
-    NUM_IN_EPOCH = 10
+    NUM_IN_EPOCH = 1
     NUM_OF_SPRITES = 75
+
+    # Vectorize generate_copy_and_difference
+    vectorized_function = np.vectorize(generate_copy_and_difference, otypes=[object, float])
 
     # Load the images
     image = Image.open(PATH_TO_IMAGE)
@@ -39,19 +41,9 @@ if __name__ == "__main__":
 
     # Evolve
     for i in range(NUM_OF_ITER):
+
         results = np.empty((NUM_IN_EPOCH, 2), dtype=object)
-
-        copies = []
-        differences = []
-
-        # TODO vectorize
-        for _ in range(NUM_IN_EPOCH):
-            copy, difference = generate_copy_and_difference(evo)
-            copies.append(copy)
-            differences.append(difference)
-
-        copies = np.array(copies)
-        differences = np.array(differences)
+        copies, differences = vectorized_function(np.arange(NUM_IN_EPOCH))
 
         results[:, 0] = copies
         results[:, 1] = differences
