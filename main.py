@@ -39,22 +39,28 @@ if __name__ == "__main__":
     # Initialize the class
     evo = Evolution(sprite, image, NUM_OF_SPRITES)
 
-    # Evolve
-    for i in range(NUM_OF_ITER):
+    try:
+        # Evolve
+        for i in range(NUM_OF_ITER):
 
-        results = np.empty((NUM_IN_EPOCH, 2), dtype=object)
-        copies, differences = vectorized_function(np.arange(NUM_IN_EPOCH))
+            results = np.empty((NUM_IN_EPOCH, 2), dtype=object)
+            copies, differences = vectorized_function(np.arange(NUM_IN_EPOCH))
 
-        results[:, 0] = copies
-        results[:, 1] = differences
-        min_index = np.argmin(results[:, 1])
-        new_object = results[min_index, 0]
-        if results[min_index, 1] < evo.calculate_difference():
-            evo = new_object
+            results[:, 0] = copies
+            results[:, 1] = differences
+            min_index = np.argmin(results[:, 1])
+            new_object = results[min_index, 0]
+            if results[min_index, 1] < evo.calculate_difference():
+                evo = new_object
 
-        # Save every 100 steps
-        if not i % 100:
-            evo.save_step(i)
-            print(f"Step: {i}; Saving to file: step{i}.PNG")
+            # Save every 100 steps
+            if not i % 100:
+                evo.save_step(i)
+                print(f"Step: {i}; Saving to file: step{i}.PNG")
 
-    evo.save("final.png")
+    except KeyboardInterrupt:
+        print(f"Saving image file in final.png")
+        evo.save("final.png")
+        print(f"Saving DNA in DNA.csv")
+        evo.save_dna("DNA.csv")
+        print(f"Exiting on iteration {i}!")

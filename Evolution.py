@@ -91,3 +91,6 @@ class Evolution:
     def save(self, path):
         result = self.generate_image()
         result.save(path, format='PNG')
+
+    def save_dna(self, filename):
+        np.savetxt(filename, self.dna, delimiter=",")
