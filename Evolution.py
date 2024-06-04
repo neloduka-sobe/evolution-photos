@@ -5,7 +5,6 @@ import os
 import copy
 from PIL import Image, ImageDraw, ImageOps
 from pathlib import Path
-
 class Evolution:
 
     def init_matrix(self):
@@ -36,6 +35,7 @@ class Evolution:
         self.num_of_sprites = num_of_sprites
         self.size_factor = 5 # Change it later TODO
         self.num_of_sprites = 100 # Change it later TODO
+        self.acc_num_of_sprites = 1
         self.init_matrix()
 
         # TODO
@@ -54,7 +54,7 @@ class Evolution:
         # Generate image based on DNA
         canvas = Image.new('RGB', (self.width, self.height), (255, 255, 255))
 
-        for i in range(self.num_of_sprites):
+        for i in range(self.acc_num_of_sprites):
             red = int(self.dna[0, i])
             green = int(self.dna[1, i])
             blue = int(self.dna[2, i])
@@ -86,13 +86,17 @@ class Evolution:
 
 
     def mutate(self, n=1):
-        random_columns = np.random.choice(self.num_of_sprites, n, replace=False)
+        random_columns = np.random.choice(self.acc_num_of_sprites, n, replace=False)
         for col in random_columns:
             self.dna[0:3, col] = np.random.randint(0, 256, size=3) 
             self.dna[3, col] = np.random.randint(0, self.width + 1)
             self.dna[4, col] = np.random.randint(0, self.height + 1)
             self.dna[5, col] = np.random.uniform(0.5, self.size_factor)
             self.dna[6, col] = np.random.randint(0, 361)
+
+    def add_sprite(self):
+        if self.acc_num_of_sprites < self.num_of_sprites:
+            self.acc_num_of_sprites += 1
 
     def copy(self):
         return copy.deepcopy(self)

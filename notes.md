@@ -1,4 +1,6 @@
-Add parent to the sprites so dont need another if
 load saved steps
+transparency
 transparent background
-increasing num_of_sprites every iteration
+penalize covering other images
+make it run in GPU
+refactor

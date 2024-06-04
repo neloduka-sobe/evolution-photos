@@ -6,7 +6,7 @@ import numpy as np
 
 def generate_copy_and_difference(index):
     evo_copy = evo.copy()
-    evo_copy.mutate(5)
+    evo_copy.mutate(1)
     difference = evo_copy.calculate_difference()
     return evo_copy, difference
 
@@ -14,7 +14,7 @@ if __name__ == "__main__":
     PATH_TO_IMAGE = "image.png"
     PATH_TO_SPRITE = "sprite.png"
     NUM_OF_ITER = 1000000
-    NUM_IN_EPOCH = 1
+    NUM_IN_EPOCH = 5
     NUM_OF_SPRITES = 75
 
     # Vectorize generate_copy_and_difference
@@ -57,6 +57,8 @@ if __name__ == "__main__":
             if not i % 100:
                 evo.save_step(i)
                 print(f"Step: {i}; Saving to file: step{i}.PNG")
+            if not i % 200:
+                evo.add_sprite()
 
     except KeyboardInterrupt:
         print(f"Saving image file in final.png")
