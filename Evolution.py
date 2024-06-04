@@ -4,6 +4,7 @@ import numpy as np
 import os
 import copy
 from PIL import Image, ImageDraw, ImageOps
+from pathlib import Path
 
 class Evolution:
 
@@ -16,8 +17,18 @@ class Evolution:
         self.dna[5, :] = np.random.uniform(0.5, self.size_factor, size=self.num_of_sprites)
         self.dna[6, :] = np.random.randint(0, 361, size=self.num_of_sprites)
 
+    # TODO
+    def load_matrix(self, file):
+        print("l")
+        f = Path(file)
+        if f.is_file() and f.exists():
+            self.dna = np.loadtxt(file,
+                 delimiter=",", dtype=["uint8", "uint8", "uint8", "uint8", "uint8", "float", "unit8"])
+        else:
+            assert("NoFile")
 
-    def __init__(self, sprite, goal_image, num_of_sprites=50):
+
+    def __init__(self, sprite, goal_image, from_file = False, num_of_sprites=50):
         self.goal_image = goal_image
         self.width, self.height = self.goal_image.size
         self.sprite = sprite
@@ -26,6 +37,17 @@ class Evolution:
         self.size_factor = 5 # Change it later TODO
         self.num_of_sprites = 100 # Change it later TODO
         self.init_matrix()
+
+        # TODO
+        '''
+        if not from_file:
+            self.init_matrix()
+        else:
+            self.load_matrix(from_file)
+            try:
+            except AssertionError:
+            self.init_matrix()
+        '''
         
 
     def generate_image(self):
