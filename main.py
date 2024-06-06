@@ -5,13 +5,25 @@ from PIL import Image
 import numpy as np
 
 def generate_copy_and_difference(index):
-    global i
     evo_copy = evo.copy()
     evo_copy.mutate() 
     difference = evo_copy.calculate_difference()
     return evo_copy, difference
 
-if __name__ == "__main__":
+
+def resize_sprite(sprite, target_size):
+    w, h = target_size
+    aspect_ratio = w / h
+
+    if aspect_ratio > 1:
+        h = int(w / aspect_ratio)
+    else:
+        w = int(h * aspect_ratio)
+
+    return sprite.resize((w, h), Image.ANTIALIAS)
+
+
+def main():
     PATH_TO_IMAGE = "image.png"
     PATH_TO_SPRITE = "sprite.png"
     NUM_IN_EPOCH = 100
@@ -25,25 +37,16 @@ if __name__ == "__main__":
     sprite = Image.open(PATH_TO_SPRITE)
 
     # Resize the sprite
-    w, h = image.size
-    w //= 10
-    h //= 10
-    aspect_ratio = w / h
-    if aspect_ratio > 1:
-        h = int(w / aspect_ratio)
-    else:
-        w = int(h * aspect_ratio)
+    sprite = resize_sprite(sprite, (image.width // 10, image.height // 10))
 
-    sprite = sprite.resize((w, h))
-
-    # Initialize the class
+    # Initialize the Evolution class
     evo = Evolution(sprite, image, False, NUM_OF_SPRITES)
 
     try:
         # Evolve
-        global i 
-        i= 1
+        step = 1
         positive_diff = 0
+
         while True:
 
             results = np.empty((NUM_IN_EPOCH, 2), dtype=object)
@@ -55,7 +58,8 @@ if __name__ == "__main__":
             new_object = results[min_index, 0]
 
             diff = results[min_index, 1] - evo.calculate_difference() 
-            print(diff)
+            print(f"{diff=}, {step=}")
+
             if diff < 0:
                 evo = new_object
                 positive_diff = 0
@@ -63,9 +67,9 @@ if __name__ == "__main__":
                 positive_diff += 1 
 
             # Save every 100 steps
-            if not i % 100:
-                evo.save_step(i)
-                print(f"Step: {i}; Saving to file: step{i}.PNG")
+            if not step % 100:
+                evo.save_step(step)
+                print(f"Step: {step}; Saving to file: step{step}.PNG")
                 
 
             if positive_diff >= 35:
@@ -73,7 +77,7 @@ if __name__ == "__main__":
                 evo.add_sprite()
                 positive_diff = 0
 
-            i += 1
+            step += 1
 
     except KeyboardInterrupt:
         print(f"Saving image file in final.png")
@@ -81,3 +85,7 @@ if __name__ == "__main__":
         print(f"Saving DNA in DNA.csv")
         evo.save_dna("DNA.csv")
         print(f"Exiting on iteration {i}!")
+
+
+if __name__ == "__main__":
+    main()
