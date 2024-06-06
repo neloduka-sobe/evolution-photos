@@ -1,5 +1,5 @@
 start big
-gamma instead of hue
+hue - mask
 general scaling - scale factor
 
 make it run on GPU

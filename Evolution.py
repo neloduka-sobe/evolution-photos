@@ -75,6 +75,12 @@ class Evolution:
             color_overlay = Image.new('RGBA', sprite.size, (red, green, blue, transparency))
             sprite = Image.blend(sprite, color_overlay, alpha=0.5)
 
+
+            # Adjust transparency
+            r, g, b, a = sprite.split()
+            alpha = a.point(lambda p: p * (transparency / 255.0))
+            sprite = Image.merge('RGBA', (r, g, b, alpha))
+
             # Rotate the sprite
             sprite = sprite.rotate(rotation, expand=True)
 
