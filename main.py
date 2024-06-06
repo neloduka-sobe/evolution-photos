@@ -26,7 +26,7 @@ def resize_sprite(sprite, target_size):
 if __name__ == "__main__":
     PATH_TO_IMAGE = "image.png"
     PATH_TO_SPRITE = "sprite.png"
-    NUM_IN_EPOCH = 100
+    NUM_IN_EPOCH = 15
     NUM_OF_SPRITES = 10000
 
     # Vectorize generate_copy_and_difference
@@ -72,13 +72,11 @@ if __name__ == "__main__":
                 print(f"Step: {step}; Saving to file: step{step}.PNG")
                 
 
-            if positive_diff >= 35:
+            if positive_diff >= 50:
                 print("Adding sprite!")
                 evo.add_sprite()
                 positive_diff = 0
 
-            if step == 100:
-                break
             step += 1
 
     except KeyboardInterrupt:

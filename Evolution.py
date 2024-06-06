@@ -33,7 +33,7 @@ class Evolution:
         self.dna[0:4, :] = np.random.randint(1, 256, size=(4, self.num_of_sprites))
         self.dna[4, :] = np.random.randint(0, self.width + 1, size=self.num_of_sprites)
         self.dna[5, :] = np.random.randint(0, self.height + 1, size=self.num_of_sprites)
-        self.dna[6, :] = np.random.uniform(0.5, self.size_factor, size=self.num_of_sprites)
+        self.dna[6, :] = np.random.uniform(self.size_factor/3, self.size_factor, size=self.num_of_sprites)
         self.dna[7, :] = np.random.randint(0, 361, size=self.num_of_sprites)
 
 
