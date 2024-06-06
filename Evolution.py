@@ -7,15 +7,19 @@ from PIL import Image, ImageDraw, ImageOps
 from pathlib import Path
 
 class Evolution:
-    def __init__(self, sprite, goal_image, from_file = False, num_of_sprites=100):
+    def __init__(self, sprite, mask, goal_image, from_file = False, num_of_sprites=100):
         self.goal_image = goal_image
         self.width, self.height = self.goal_image.size
         self.goal_to_compare = np.array(self.goal_image).astype(np.int32)
         self.sprite = sprite
         self.sprite_width, self.sprite_height = self.sprite.size
         self.num_of_sprites = num_of_sprites
+        self.mask = mask
         self.size_factor = 5
         self.acc_num_of_sprites = 1
+
+        print(self.mask.size)
+        print(self.sprite.size)
 
         if from_file:
             try:
@@ -67,13 +71,16 @@ class Evolution:
             size_factor = self.dna[6, i]
             rotation = int(self.dna[7, i])
 
+
             # Resize
             sprite_width = int(self.sprite_width * size_factor)
             sprite_height = int(self.sprite_height * size_factor)
             sprite = self.sprite.resize((sprite_width, sprite_height), Image.ANTIALIAS)
+            mask = self.mask.resize((sprite_width, sprite_height), Image.ANTIALIAS)
             # Change the sprite color by blending with a color overlay
             color_overlay = Image.new('RGBA', sprite.size, (red, green, blue, transparency))
-            sprite = Image.blend(sprite, color_overlay, alpha=0.5)
+            sprite_with_overlay = Image.composite(color_overlay, sprite, mask)
+            sprite = Image.blend(sprite, sprite_with_overlay, alpha=0.7)
 
 
             # Adjust transparency

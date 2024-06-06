@@ -26,6 +26,7 @@ def resize_sprite(sprite, target_size):
 if __name__ == "__main__":
     PATH_TO_IMAGE = "image.png"
     PATH_TO_SPRITE = "sprite.png"
+    PATH_TO_MASK = "mask.png"
     NUM_IN_EPOCH = 15
     NUM_OF_SPRITES = 10000
 
@@ -35,12 +36,14 @@ if __name__ == "__main__":
     # Load the images
     image = Image.open(PATH_TO_IMAGE)
     sprite = Image.open(PATH_TO_SPRITE)
+    mask = Image.open(PATH_TO_MASK).convert('L')
 
     # Resize the sprite
     sprite = resize_sprite(sprite, (image.width // 10, image.height // 10))
+    mask = resize_sprite(mask, (image.width // 10, image.height // 10))
 
     # Initialize the Evolution class
-    evo = Evolution(sprite, image, "DNA.csv", NUM_OF_SPRITES)
+    evo = Evolution(sprite, mask, image, False, NUM_OF_SPRITES)
 
     try:
         # Evolve
@@ -72,7 +75,7 @@ if __name__ == "__main__":
                 print(f"Step: {step}; Saving to file: step{step}.PNG")
                 
 
-            if positive_diff >= 35:
+            if positive_diff >= 50:
                 print("Adding sprite!")
                 evo.add_sprite()
                 positive_diff = 0
