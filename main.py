@@ -40,7 +40,7 @@ if __name__ == "__main__":
     sprite = resize_sprite(sprite, (image.width // 10, image.height // 10))
 
     # Initialize the Evolution class
-    evo = Evolution(sprite, image, False, NUM_OF_SPRITES)
+    evo = Evolution(sprite, image, "DNA.csv", NUM_OF_SPRITES)
 
     try:
         # Evolve
@@ -72,7 +72,7 @@ if __name__ == "__main__":
                 print(f"Step: {step}; Saving to file: step{step}.PNG")
                 
 
-            if positive_diff >= 50:
+            if positive_diff >= 35:
                 print("Adding sprite!")
                 evo.add_sprite()
                 positive_diff = 0
