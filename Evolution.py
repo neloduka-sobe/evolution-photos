@@ -7,15 +7,35 @@ from PIL import Image, ImageDraw, ImageOps
 from pathlib import Path
 
 class Evolution:
+    def __init__(self, sprite, goal_image, from_file = False, num_of_sprites=50):
+        self.goal_image = goal_image
+        self.width, self.height = self.goal_image.size
+        self.goal_to_compare = np.array(self.goal_image).astype(np.int32)
+        self.sprite = sprite
+        self.sprite_width, self.sprite_height = self.sprite.size
+        self.num_of_sprites = num_of_sprites
+        self.size_factor = 5
+        self.acc_num_of_sprites = 1
+
+        if from_file:
+            try:
+                self.load_matrix(from_file)
+            except FileNotFoundError as e:
+                print(e)
+                self.init_matrix()
+        else:
+            self.init_matrix()
+
 
     def init_matrix(self):
-
+        # Initialize the DNA matrix with random values
         self.dna = np.zeros((8, self.num_of_sprites))
         self.dna[0:4, :] = np.random.randint(1, 256, size=(4, self.num_of_sprites))
         self.dna[4, :] = np.random.randint(0, self.width + 1, size=self.num_of_sprites)
         self.dna[5, :] = np.random.randint(0, self.height + 1, size=self.num_of_sprites)
         self.dna[6, :] = np.random.uniform(0.5, self.size_factor, size=self.num_of_sprites)
         self.dna[7, :] = np.random.randint(0, 361, size=self.num_of_sprites)
+
 
     def load_matrix(self, file):
         f = Path(file)
@@ -29,32 +49,9 @@ class Evolution:
             self.dna[5, :] = loaded_dna[5, :].astype(np.uint8)
             self.dna[6, :] = loaded_dna[6, :].astype(np.float32)
             self.dna[7, :] = loaded_dna[7, :].astype(np.uint8)
-
         else:
             raise FileNotFoundError("No file")
 
-
-    def __init__(self, sprite, goal_image, from_file = False, num_of_sprites=50):
-        self.goal_image = goal_image
-        self.width, self.height = self.goal_image.size
-        self.goal_to_compare = np.array(self.goal_image).astype(np.int32)
-        self.sprite = sprite
-        self.sprite_width, self.sprite_height = self.sprite.size
-        self.num_of_sprites = num_of_sprites
-        self.size_factor = 5
-        self.num_of_sprites = num_of_sprites
-        self.acc_num_of_sprites = 1
-        self.init_matrix()
-
-        if not from_file:
-            self.init_matrix()
-        else:
-            try:
-                self.load_matrix(from_file)
-            except FileNotFoundError as e:
-                print(e)
-                self.init_matrix()
-        
 
     def generate_image(self):
         # Generate image based on DNA
@@ -73,7 +70,6 @@ class Evolution:
             # Resize
             sprite_width = int(self.sprite_width * size_factor)
             sprite_height = int(self.sprite_height * size_factor)
-
             sprite = self.sprite.resize((sprite_width, sprite_height), Image.ANTIALIAS)
             # Change the sprite color by blending with a color overlay
             color_overlay = Image.new('RGBA', sprite.size, (red, green, blue, transparency))
@@ -93,12 +89,11 @@ class Evolution:
 
 
     def mutate(self, n=1):
-        if n > self.acc_num_of_sprites:
-            n = self.acc_num_of_sprites
+        n = max(1, int(self.acc_num_of_sprites*0.15))
 
-        n = int(self.acc_num_of_sprites*0.15)+1
+        # Always include last added sprite
+        random_columns = np.append(np.random.choice(self.acc_num_of_sprites-1, n-1, replace=False), self.acc_num_of_sprites)
 
-        random_columns = np.random.choice(self.acc_num_of_sprites, n, replace=False)
         for col in random_columns:
             self.dna[0:4, col] = np.random.randint(0, 256, size=4) 
             self.dna[4, col] = np.random.randint(0, self.width + 1)
@@ -107,6 +102,7 @@ class Evolution:
             self.dna[7, col] = np.random.randint(0, 361)
 
     def add_sprite(self):
+        # Increment the number of active sprites
         if self.acc_num_of_sprites < self.num_of_sprites:
             self.acc_num_of_sprites += 1
 
@@ -121,13 +117,18 @@ class Evolution:
         return difference
 
     def save_step(self, step, directory="./steps"):
+        # Save the current image
+        if not os.path.exists(directory):
+            os.makedirs(directory)
         filename = f"step{step}.PNG"
         path = os.path.join(directory, filename)
         self.save(path)
 
     def save(self, path):
+        # Save the image to a file
         result = self.generate_image()
         result.save(path, format='PNG')
 
     def save_dna(self, filename):
+        # Save the DNA matrix to file
         np.savetxt(filename, self.dna, delimiter=",")
