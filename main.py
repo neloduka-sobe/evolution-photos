@@ -5,17 +5,17 @@ from PIL import Image
 import numpy as np
 
 def generate_copy_and_difference(index):
+    global i
     evo_copy = evo.copy()
-    evo_copy.mutate(1)
+    evo_copy.mutate() 
     difference = evo_copy.calculate_difference()
     return evo_copy, difference
 
 if __name__ == "__main__":
     PATH_TO_IMAGE = "image.png"
     PATH_TO_SPRITE = "sprite.png"
-    NUM_OF_ITER = 1000000
-    NUM_IN_EPOCH = 5
-    NUM_OF_SPRITES = 75
+    NUM_IN_EPOCH = 100
+    NUM_OF_SPRITES = 10000
 
     # Vectorize generate_copy_and_difference
     vectorized_function = np.vectorize(generate_copy_and_difference, otypes=[object, float])
@@ -37,11 +37,14 @@ if __name__ == "__main__":
     sprite = sprite.resize((w, h))
 
     # Initialize the class
-    evo = Evolution(sprite, image, NUM_OF_SPRITES)
+    evo = Evolution(sprite, image, False, NUM_OF_SPRITES)
 
     try:
         # Evolve
-        for i in range(NUM_OF_ITER):
+        global i 
+        i= 1
+        positive_diff = 0
+        while True:
 
             results = np.empty((NUM_IN_EPOCH, 2), dtype=object)
             copies, differences = vectorized_function(np.arange(NUM_IN_EPOCH))
@@ -52,16 +55,25 @@ if __name__ == "__main__":
             new_object = results[min_index, 0]
 
             diff = results[min_index, 1] - evo.calculate_difference() 
-            if diff > 0:
+            print(diff)
+            if diff < 0:
                 evo = new_object
+                positive_diff = 0
+            else:
+                positive_diff += 1 
 
             # Save every 100 steps
             if not i % 100:
                 evo.save_step(i)
                 print(f"Step: {i}; Saving to file: step{i}.PNG")
+                
 
-            if not i % 150: # Adapt early stopping using diff TODO
+            if positive_diff >= 35:
+                print("Adding sprite!")
                 evo.add_sprite()
+                positive_diff = 0
+
+            i += 1
 
     except KeyboardInterrupt:
         print(f"Saving image file in final.png")

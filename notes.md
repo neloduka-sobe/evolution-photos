@@ -1,6 +1,6 @@
-load saved steps
 transparent background
-early stoping
-make into infinity loop
-make it run in GPU
+general scaling - scale factor
+Better mutation method
 refactor
+make it run on GPU
+refactor once GPU code

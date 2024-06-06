@@ -17,19 +17,27 @@ class Evolution:
         self.dna[6, :] = np.random.uniform(0.5, self.size_factor, size=self.num_of_sprites)
         self.dna[7, :] = np.random.randint(0, 361, size=self.num_of_sprites)
 
-    # TODO
     def load_matrix(self, file):
         f = Path(file)
         if f.is_file() and f.exists():
-            self.dna = np.loadtxt(file,
-                 delimiter=",", dtype=["uint8", "uint8", "uint8", "uint8", "uint8", "float", "unit8"])
+            loaded_dna = np.loadtxt(file, delimiter=",")
+
+            # Saving in proper datatypes
+            self.dna = np.zeros((8, self.num_of_sprites))
+            self.dna[0:4, :] = loaded_dna[0:4, :].astype(np.uint8)
+            self.dna[4, :] = loaded_dna[4, :].astype(np.uint8)
+            self.dna[5, :] = loaded_dna[5, :].astype(np.uint8)
+            self.dna[6, :] = loaded_dna[6, :].astype(np.float32)
+            self.dna[7, :] = loaded_dna[7, :].astype(np.uint8)
+
         else:
-            assert("NoFile")
+            raise FileNotFoundError("No file")
 
 
     def __init__(self, sprite, goal_image, from_file = False, num_of_sprites=50):
         self.goal_image = goal_image
         self.width, self.height = self.goal_image.size
+        self.goal_to_compare = np.array(self.goal_image).astype(np.int32)
         self.sprite = sprite
         self.sprite_width, self.sprite_height = self.sprite.size
         self.num_of_sprites = num_of_sprites
@@ -38,16 +46,14 @@ class Evolution:
         self.acc_num_of_sprites = 1
         self.init_matrix()
 
-        # TODO
-        '''
         if not from_file:
             self.init_matrix()
         else:
-            self.load_matrix(from_file)
             try:
-            except AssertionError:
-            self.init_matrix()
-        '''
+                self.load_matrix(from_file)
+            except FileNotFoundError as e:
+                print(e)
+                self.init_matrix()
         
 
     def generate_image(self):
@@ -87,6 +93,11 @@ class Evolution:
 
 
     def mutate(self, n=1):
+        if n > self.acc_num_of_sprites:
+            n = self.acc_num_of_sprites
+
+        n = int(self.acc_num_of_sprites*0.15)+1
+
         random_columns = np.random.choice(self.acc_num_of_sprites, n, replace=False)
         for col in random_columns:
             self.dna[0:4, col] = np.random.randint(0, 256, size=4) 
@@ -104,10 +115,9 @@ class Evolution:
 
     def calculate_difference(self):
         np_current = np.array(self.generate_image())
-        np_goal = np.array(self.goal_image)
 
         # Calculate the difference
-        difference = np.sum(np.abs(np_goal.astype(np.int32) - np_current.astype(np.int32)))
+        difference = np.sum(np.abs(self.goal_to_compare - np_current.astype(np.int32)))
         return difference
 
     def save_step(self, step, directory="./steps"):
