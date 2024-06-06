@@ -7,7 +7,7 @@ from PIL import Image, ImageDraw, ImageOps
 from pathlib import Path
 
 class Evolution:
-    def __init__(self, sprite, goal_image, from_file = False, num_of_sprites=50):
+    def __init__(self, sprite, goal_image, from_file = False, num_of_sprites=100):
         self.goal_image = goal_image
         self.width, self.height = self.goal_image.size
         self.goal_to_compare = np.array(self.goal_image).astype(np.int32)
@@ -92,14 +92,25 @@ class Evolution:
         n = max(1, int(self.acc_num_of_sprites*0.15))
 
         # Always include last added sprite
-        random_columns = np.append(np.random.choice(self.acc_num_of_sprites-1, n-1, replace=False), self.acc_num_of_sprites)
+        random_columns = np.append(np.random.choice(self.acc_num_of_sprites, n, replace=False), self.acc_num_of_sprites)
 
         for col in random_columns:
-            self.dna[0:4, col] = np.random.randint(0, 256, size=4) 
-            self.dna[4, col] = np.random.randint(0, self.width + 1)
-            self.dna[5, col] = np.random.randint(0, self.height + 1)
-            self.dna[6, col] = np.random.uniform(0.5, self.size_factor)
-            self.dna[7, col] = np.random.randint(0, 361)
+            # Add small perturbations to the existing values
+            self.dna[0:4, col] += np.random.randint(-10, 11, size=4)
+            self.dna[0:4, col] = np.clip(self.dna[0:4, col], 0, 255)  # Ensure values stay within 0-255 range
+
+            self.dna[4, col] += np.random.randint(-10, 11)
+            self.dna[4, col] = np.clip(self.dna[4, col], 0, self.width)  # Ensure values stay within 0-width range
+
+            self.dna[5, col] += np.random.randint(-10, 11)
+            self.dna[5, col] = np.clip(self.dna[5, col], 0, self.height)  # Ensure values stay within 0-height range
+
+            self.dna[6, col] += np.random.uniform(-0.1, 0.1)
+            self.dna[6, col] = np.clip(self.dna[6, col], 0.5, self.size_factor)  # Ensure values stay within 0.5-size_factor range
+
+            self.dna[7, col] += np.random.randint(-10, 11)
+            self.dna[7, col] = np.mod(self.dna[7, col], 361)  # Ensure values stay within 0-360 degrees range
+
 
     def add_sprite(self):
         # Increment the number of active sprites
@@ -115,6 +126,7 @@ class Evolution:
         # Calculate the difference
         difference = np.sum(np.abs(self.goal_to_compare - np_current.astype(np.int32)))
         return difference
+
 
     def save_step(self, step, directory="./steps"):
         # Save the current image

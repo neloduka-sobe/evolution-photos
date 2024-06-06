@@ -2,7 +2,7 @@
 # by Borys Łangowicz (neloduka_sobe)
 from Evolution import Evolution
 from PIL import Image
-import numpy as np
+import cupy as cp
 
 def generate_copy_and_difference(index):
     evo_copy = evo.copy()
@@ -20,17 +20,17 @@ def resize_sprite(sprite, target_size):
     else:
         w = int(h * aspect_ratio)
 
-    return sprite.resize((w, h), Image.ANTIALIAS)
+    return sprite.resize((w, h))
 
 
-def main():
+if __name__ == "__main__":
     PATH_TO_IMAGE = "image.png"
     PATH_TO_SPRITE = "sprite.png"
-    NUM_IN_EPOCH = 100
+    NUM_IN_EPOCH = 10
     NUM_OF_SPRITES = 10000
 
     # Vectorize generate_copy_and_difference
-    vectorized_function = np.vectorize(generate_copy_and_difference, otypes=[object, float])
+    vectorized_function = cp.vectorize(generate_copy_and_difference, otypes=[object, float])
 
     # Load the images
     image = Image.open(PATH_TO_IMAGE)
@@ -49,16 +49,16 @@ def main():
 
         while True:
 
-            results = np.empty((NUM_IN_EPOCH, 2), dtype=object)
-            copies, differences = vectorized_function(np.arange(NUM_IN_EPOCH))
+            results = cp.empty((NUM_IN_EPOCH, 2), dtype=object)
+            copies, differences = vectorized_function(cp.arange(NUM_IN_EPOCH))
 
             results[:, 0] = copies
             results[:, 1] = differences
-            min_index = np.argmin(results[:, 1])
+            min_index = cp.argmin(results[:, 1])
             new_object = results[min_index, 0]
 
             diff = results[min_index, 1] - evo.calculate_difference() 
-            print(f"{diff=}, {step=}")
+            print(f"{diff=}; {step=}")
 
             if diff < 0:
                 evo = new_object
@@ -84,8 +84,4 @@ def main():
         evo.save("final.png")
         print(f"Saving DNA in DNA.csv")
         evo.save_dna("DNA.csv")
-        print(f"Exiting on iteration {i}!")
-
-
-if __name__ == "__main__":
-    main()
+        print(f"Exiting on iteration {step}!")
