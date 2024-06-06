@@ -20,10 +20,10 @@ def resize_sprite(sprite, target_size):
     else:
         w = int(h * aspect_ratio)
 
-    return sprite.resize((w, h), Image.ANTIALIAS)
+    return sprite.resize((w, h))
 
 
-def main():
+if __name__ == "__main__":
     PATH_TO_IMAGE = "image.png"
     PATH_TO_SPRITE = "sprite.png"
     NUM_IN_EPOCH = 100
@@ -58,7 +58,7 @@ def main():
             new_object = results[min_index, 0]
 
             diff = results[min_index, 1] - evo.calculate_difference() 
-            print(f"{diff=}, {step=}")
+            print(f"{diff=}; {step=}")
 
             if diff < 0:
                 evo = new_object
@@ -84,8 +84,4 @@ def main():
         evo.save("final.png")
         print(f"Saving DNA in DNA.csv")
         evo.save_dna("DNA.csv")
-        print(f"Exiting on iteration {i}!")
-
-
-if __name__ == "__main__":
-    main()
+        print(f"Exiting on iteration {step}!")

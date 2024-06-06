@@ -7,7 +7,7 @@ from PIL import Image, ImageDraw, ImageOps
 from pathlib import Path
 
 class Evolution:
-    def __init__(self, sprite, goal_image, from_file = False, num_of_sprites=50):
+    def __init__(self, sprite, goal_image, from_file = False, num_of_sprites=100):
         self.goal_image = goal_image
         self.width, self.height = self.goal_image.size
         self.goal_to_compare = np.array(self.goal_image).astype(np.int32)
@@ -92,7 +92,7 @@ class Evolution:
         n = max(1, int(self.acc_num_of_sprites*0.15))
 
         # Always include last added sprite
-        random_columns = np.append(np.random.choice(self.acc_num_of_sprites-1, n-1, replace=False), self.acc_num_of_sprites)
+        random_columns = np.append(np.random.choice(self.acc_num_of_sprites, n, replace=False), self.acc_num_of_sprites)
 
         for col in random_columns:
             self.dna[0:4, col] = np.random.randint(0, 256, size=4) 
@@ -115,6 +115,7 @@ class Evolution:
         # Calculate the difference
         difference = np.sum(np.abs(self.goal_to_compare - np_current.astype(np.int32)))
         return difference
+
 
     def save_step(self, step, directory="./steps"):
         # Save the current image
