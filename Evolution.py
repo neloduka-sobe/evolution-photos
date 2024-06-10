@@ -15,11 +15,8 @@ class Evolution:
         self.sprite_width, self.sprite_height = self.sprite.size
         self.num_of_sprites = num_of_sprites
         self.mask = mask
-        self.size_factor = 5
+        self.size_factor = 7
         self.acc_num_of_sprites = 1
-
-        print(self.mask.size)
-        print(self.sprite.size)
 
         if from_file:
             try:
@@ -34,7 +31,8 @@ class Evolution:
     def init_matrix(self):
         # Initialize the DNA matrix with random values
         self.dna = np.zeros((8, self.num_of_sprites))
-        self.dna[0:4, :] = np.random.randint(1, 256, size=(4, self.num_of_sprites))
+        self.dna[0:3, :] = np.random.randint(1, 256, size=(3, self.num_of_sprites))
+        self.dna[3, :] = np.random.randint(100, 256, size=self.num_of_sprites)
         self.dna[4, :] = np.random.randint(0, self.width + 1, size=self.num_of_sprites)
         self.dna[5, :] = np.random.randint(0, self.height + 1, size=self.num_of_sprites)
         self.dna[6, :] = np.random.uniform(self.size_factor/3, self.size_factor, size=self.num_of_sprites)
@@ -110,7 +108,7 @@ class Evolution:
         for col in random_columns:
             # Add small perturbations to the existing values
             self.dna[0:4, col] += np.random.randint(-10, 11, size=4)
-            self.dna[0:4, col] = np.clip(self.dna[0:4, col], 0, 255)  # Ensure values stay within 0-255 range
+            self.dna[0:4, col] = np.clip(self.dna[0:4, col], 1, 255)  # Ensure values stay within 0-255 range
 
             self.dna[4, col] += np.random.randint(-10, 11)
             self.dna[4, col] = np.clip(self.dna[4, col], 0, self.width)  # Ensure values stay within 0-width range

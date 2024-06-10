@@ -61,7 +61,7 @@ if __name__ == "__main__":
             new_object = results[min_index, 0]
 
             diff = results[min_index, 1] - evo.calculate_difference() 
-            print(f"{diff=}; {step=}")
+            print(f"{diff=}; {step=}; {evo.acc_num_of_sprites=}")
 
             if diff < 0:
                 evo = new_object
@@ -75,7 +75,7 @@ if __name__ == "__main__":
                 print(f"Step: {step}; Saving to file: step{step}.PNG")
                 
 
-            if positive_diff >= 50:
+            if positive_diff >= 40:
                 print("Adding sprite!")
                 evo.add_sprite()
                 positive_diff = 0
