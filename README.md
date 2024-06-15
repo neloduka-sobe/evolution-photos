@@ -27,6 +27,7 @@ Replicating photos with other graphics, using evolutionary algorithms.
 ## Contact
 
 [LinkedIn](https://www.linkedin.com/in/borys-langowicz/)
+
 [GitHub](https://github.com/neloduka-sobe)
 
 ## LICENSE
