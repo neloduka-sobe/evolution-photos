@@ -14,6 +14,8 @@
 </div>
 
 ## About The Project
+![Product Name Screen Shot](result2.jpeg)
+
 ![Product Name Screen Shot](result.png)
 Replicating photos with other graphics, using evolutionary algorithms.
 
